@@ -67,6 +67,13 @@
             nix-hardware.nixosModules.microsoft-surface-common
           ];
         })
+        (mkHost {
+          inherit self nixpkgs userName userPassword userKey;
+          hostId = "6d02b036";
+          hostName = "kent";
+          stateVersion = "23.11";
+          modules = [];
+        })
       ];
     }
     // (flake-utils.lib.eachDefaultSystem (system: let
