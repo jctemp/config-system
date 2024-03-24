@@ -76,24 +76,6 @@
       };
     in {
       formatter = pkgs.alejandra;
-      packages = rec {
-        default = iso;
-        iso =
-          if builtins.filter (x: x == system) ["x86_64-linux" "aarch64-linux"] != []
-          then
-            nixos-generators.nixosGenerate {
-              inherit system;
-              specialArgs = {inherit self pkgs;};
-              modules = [./iso.nix];
-              format = "iso";
-              # format = "install-iso";
-            }
-          else
-            pkgs.stdenv.mkDerivation {
-              name = "empty-derivation";
-              inherit system;
-            };
-      };
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           (writeShellScriptBin "check" ''
