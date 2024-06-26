@@ -110,7 +110,10 @@
   };
 
   services = {
-    udev.packages = [pkgs.yubikey-personalization];
+    udev = {
+      enable = true;
+      packages = [pkgs.yubikey-personalization];
+    };
     pcscd.enable = true;
   };
 
