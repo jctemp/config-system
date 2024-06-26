@@ -12,6 +12,9 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     flake-utils.url = "github:numtide/flake-utils";
     nix-hardware.url = "github:NixOS/nixos-hardware";
+    nixos-wsl.url = "github:nix-community/NixOS-WSL";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
   };
 
   outputs = {
@@ -19,6 +22,8 @@
     nixpkgs,
     flake-utils,
     nix-hardware,
+    nixos-wsl,
+    vscode-server,
   }: let
     lib = import ./lib/utils.nix;
 
@@ -68,6 +73,18 @@
           };
           stateVersion = "23.11";
           modules = [];
+        })
+        (lib.mkHost {
+          inherit self nixpkgs userName userPassword userKey;
+          hostId = "134a1048";
+          hostName = "wsl";
+          cudaSupport = false;
+          zfsSupport = false;
+          stateVersion = "23.11";
+          modules = [
+            nixos-wsl.nixosModules.wsl
+            vscode-server.nixosModules.default
+          ];
         })
       ];
     }
