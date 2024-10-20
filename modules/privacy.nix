@@ -33,21 +33,6 @@ in {
     # YubiKey
     (lib.mkIf (cfg.enable
       && cfg.supportYubikey) {
-      environment = {
-        shellInit = ''
-          export GPG_TTY="$(tty)"
-          gpg-connect-agent /bye
-          export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-          gpgconf --launch gpg-agent
-        '';
-        interactiveShellInit = ''
-          export GPG_TTY="$(tty)"
-          gpg-connect-agent /bye
-          export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-          gpgconf --launch gpg-agent
-        '';
-      };
-
       environment.systemPackages = [
         # GPG w/ Yubikey (Multiple keys)
         (pkgs.writeShellScriptBin "gpg-reset-yubikey-id" ''
@@ -60,14 +45,9 @@ in {
         '')
 
         # Yubikey
-        pkgs.yubico-piv-tool
+        pkgs.yubioath-flutter
         pkgs.yubikey-manager
-        pkgs.yubikey-personalization
-        pkgs.yubikey-touch-detector
-
-        # Further tools
-        pkgs.pinentry
-        pkgs.pcsctools
+        pkgs.pam_u2f
       ];
 
       programs = {
@@ -81,6 +61,7 @@ in {
       };
 
       services = {
+        yubikey-agent.enable = true;
         udev.packages = [pkgs.yubikey-personalization];
         pcscd.enable = true;
       };
