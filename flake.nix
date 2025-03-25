@@ -1,9 +1,7 @@
 {
   description = "NixOS system configuration";
 
-  nixConfig = {
-    experimental-features = ["nix-command" "flakes"];
-  };
+  nixConfig.experimental-features = ["nix-command" "flakes"];
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
@@ -20,31 +18,21 @@
     # Hardware support
     nix-hardware.url = "github:NixOS/nixos-hardware";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
-
-    # Utils
-    # sops-nix = {
-    #   url = "github:Mic92/sops-nix";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
   };
 
   outputs = inputs: let
-    # Helper function to create a NixOS system
     mkSystem = hostName: system: extraModules:
       inputs.nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {inherit inputs;};
         modules =
           [
-            ./lib
             ./modules
             ./hosts/${hostName}
 
-            # Common configurations
             ./modules/disk-config.nix
             ./modules/user-config.nix
 
-            # System state version
             ({...}: {
               modules.hostSpec.hostName = hostName;
               system.stateVersion = "24.11";
@@ -52,7 +40,7 @@
           ]
           ++ extraModules;
       };
-    # Generate various system versions
+
     mkEach = systems: func:
       inputs.nixpkgs.lib.genAttrs systems (system: func system);
     mkEachDefault = mkEach ["x86_64-linux"];
